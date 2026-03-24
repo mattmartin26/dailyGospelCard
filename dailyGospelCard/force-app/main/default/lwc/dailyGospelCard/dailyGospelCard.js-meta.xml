@@ -1,20 +1,21 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
-    <apiVersion>60.0</apiVersion>
-    <isExposed>true</isExposed>
-    <masterLabel>Daily Gospel Card</masterLabel>
-    <description>Displays the Gospel reading of the day using an external API via Apex.</description>
-    <targets>
-        <target>lightning__AppPage</target>
-        <target>lightning__FlowScreen</target>
-    </targets>
-    <targetConfigs>
-        <targetConfig targets="lightning__FlowScreen">
-            <supportedFormFactors>
-                <supportedFormFactor type="Large"/>
-                <supportedFormFactor type="Medium"/>
-                <supportedFormFactor type="Small"/>
-            </supportedFormFactors>
-        </targetConfig>
-    </targetConfigs>
-</LightningComponentBundle>
+<file name=DailyGospelService.cls path=/Users/matthewmartin/GitHub/dailyGospelCard/dailyGospelCard/force-app/main/default/classes>public with sharing class DailyGospelService {
+    @AuraEnabled(cacheable=true)
+    public static String getDailyGospel() {
+        Http http = new Http();
+        HttpRequest req = new HttpRequest();
+        String path = '/bible/readings/' + Date.today().format('MMddyy') + '.cfm';
+
+        // USCCB dated page pattern: /bible/readings/MMDDYY.cfm
+        // Direct endpoint used instead of a Named Credential. This requires a Remote Site Setting
+        // for https://bible.usccb.org in the target org.
+        req.setEndpoint('https://bible.usccb.org' + path);
+        req.setMethod('GET');
+
+        HttpResponse res = http.send(req);
+        if (res.getStatusCode() == 200) {
+            return res.getBody();
+        } else {
+            throw new AuraHandledException('Failed to retrieve daily gospel.');
+        }
+    }
+}
