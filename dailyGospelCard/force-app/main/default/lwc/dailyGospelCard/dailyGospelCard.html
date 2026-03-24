@@ -1,0 +1,51 @@
+<!--
+  LWC: Daily Gospel Card
+  Targets: Flow screen + App page
+  UX: Today only
+  Data access: Apex call to external API via Named Credential (placeholder)
+  SLDS card layout with loading and error states
+-->
+<template>
+  <article class="slds-card">
+    <div class="slds-card__header slds-grid slds-p-around_small">
+      <header class="slds-media slds-media_center slds-has-flexi-truncate">
+        <div class="slds-media__figure">
+          <span class="slds-icon_container slds-icon-standard-event" title="Gospel">
+            <svg class="slds-icon slds-icon_small" aria-hidden="true">
+              <use xlink:href="/assets/icons/standard-sprite/svg/symbols.svg#event"></use>
+            </svg>
+          </span>
+        </div>
+        <div class="slds-media__body">
+          <h2 class="slds-card__header-title slds-truncate" title="Gospel of the Day">
+            <span class="slds-text-heading_small">Gospel of the Day</span>
+          </h2>
+        </div>
+      </header>
+    </div>
+
+    <div class="slds-card__body slds-card__body_inner">
+      <template if:true={isLoading}>
+        <lightning-spinner alternative-text="Loading Gospel..." size="small"></lightning-spinner>
+      </template>
+
+      <template if:true={error}>
+        <div class="slds-text-color_error slds-m-vertical_small">
+          {error}
+        </div>
+      </template>
+
+      <template if:true={hasGospel}>
+        <div class="slds-text-title slds-m-bottom_x-small">{title}</div>
+        <div class="slds-text-body_small slds-text-color_weak slds-m-bottom_small">{reference}</div>
+        <div class="gospel-body slds-text-longform">{body}</div>
+      </template>
+
+      <template if:false={hasGospel}>
+        <template if:false={isLoading}>
+          <div class="slds-text-color_weak">No reading available.</div>
+        </template>
+      </template>
+    </div>
+  </article>
+</template>
